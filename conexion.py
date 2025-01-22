@@ -13,3 +13,4 @@ class ConectorAWS():
          aws_session_token=os.getenv("SESSION_TOKEN"),
          region_name=os.getenv("REGION")
       )
+      return client

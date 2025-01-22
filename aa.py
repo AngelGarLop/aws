@@ -1,9 +1,10 @@
 import boto3
 from conexion import ConectorAWS
 
-conector=ConectorAWS()
-dynamodb=conector.conectarse()
+conector = ConectorAWS()
+dynamodb = conector.conectarse()
 
+print(dynamodb)
 # Función para crear una tabla
 def create_table(table_name, key_schema, attribute_definitions, provisioned_throughput):
     table = dynamodb.create_table(
@@ -12,24 +13,25 @@ def create_table(table_name, key_schema, attribute_definitions, provisioned_thro
         AttributeDefinitions=attribute_definitions,
         ProvisionedThroughput=provisioned_throughput
     )
-    table.wait_until_exists()
-    print(f"Table {table_name} created successfully.")
+    #table.wait_until_exists()
+    #print(f"Table {table_name} created successfully.")
 
 # Crear tres tablas
-create_table('Uasusario', 
-             [{'AttributeName': 'Nombre', 'KeyType': 'HASH',"AttributeName": "Edad", "KeyType": "RANGE"}], 
-             [{'AttributeName': 'ID', 'AttributeType': 'S'}], 
+create_table('Usuario', 
+             [{'AttributeName': 'Nombre', 'KeyType': 'HASH'}, {"AttributeName": "Edad", "KeyType": "RANGE"}], 
+             [{'AttributeName': 'Nombre', 'AttributeType': 'S'}, {'AttributeName': 'Edad', 'AttributeType': 'N'}], 
              {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5})
 
-create_table('Tabla2', 
-             [{'AttributeName': 'ID', 'KeyType': 'HASH'}], 
-             [{'AttributeName': 'ID', 'AttributeType': 'S'}], 
+create_table('Coche', 
+             [{'AttributeName': 'Marca', 'KeyType': 'HASH'}, {"AttributeName": "Duenno", "KeyType": "RANGE"}], 
+             [{'AttributeName': 'Marca', 'AttributeType': 'S'}, {'AttributeName': 'Duenno', 'AttributeType': 'S'}], 
              {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5})
 
-create_table('Tabla3', 
-             [{'AttributeName': 'ID', 'KeyType': 'HASH'}], 
-             [{'AttributeName': 'ID', 'AttributeType': 'S'}], 
+create_table('Semaforo', 
+             [{'AttributeName': 'Ubicacion', 'KeyType': 'HASH'}, {"AttributeName": "Color", "KeyType": "RANGE"}], 
+             [{'AttributeName': 'Ubicacion', 'AttributeType': 'S'}, {'AttributeName': 'Color', 'AttributeType': 'S'}], 
              {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5})
+
 '''
 # Función para crear un registro
 def put_item(table_name, item):
