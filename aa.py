@@ -1,10 +1,13 @@
 import boto3
 from conexion import ConectorAWS
+from boto3.dynamodb.conditions import Key
 
 conector = ConectorAWS()
 dynamodb = conector.conectarse()
 
 print(dynamodb)
+'''
+print("1 -Crear al menos 3 tablas con dos atributos cada una ")
 # Función para crear una tabla
 def create_table(table_name, key_schema, attribute_definitions, provisioned_throughput):
     table = dynamodb.create_table(
@@ -32,17 +35,26 @@ create_table('Semaforo',
              [{'AttributeName': 'Ubicacion', 'AttributeType': 'S'}, {'AttributeName': 'Color', 'AttributeType': 'S'}], 
              {'ReadCapacityUnits': 5, 'WriteCapacityUnits': 5})
 
-'''
+print("2 - Insertar 3 registros en cada tabla")
 # Función para crear un registro
 def put_item(table_name, item):
     table = dynamodb.Table(table_name)
     table.put_item(Item=item)
-    print(f"Item added to {table_name}: {item}")
+    print(f"Item añadido a {table_name}: {item}")
+
 
 # Crear tres registros en cada tabla
-put_item('Tabla1', {'ID': '1', 'Atributo1': 'Valor1', 'Atributo2': 'Valor2'})
-put_item('Tabla2', {'ID': '2', 'Atributo1': 'Valor1', 'Atributo2': 'Valor2'})
-put_item('Tabla3', {'ID': '3', 'Atributo1': 'Valor1', 'Atributo2': 'Valor2'})
+put_item('Usuario', {'ID': '1', 'Nombre': 'Paco', 'Edad': 25})
+put_item('Usuario', {'ID': '2', 'Nombre': 'José', 'Edad': 58})
+put_item('Usuario', {'ID': '3', 'Nombre': 'Antonio', 'Edad': 32})
+put_item('Coche', {'ID': '1', 'Marca': 'Tesla', 'Duenno': 'Paco'})
+put_item('Coche', {'ID': '2', 'Marca': 'Seat', 'Duenno': 'Luis'})
+put_item('Coche', {'ID': '2', 'Marca': 'Ford', 'Duenno': 'Pedro'})
+put_item('Semaforo', {'ID': '1', 'Ubicacion': 'Sevilla', 'Color': 'Rojo'})
+put_item('Semaforo', {'ID': '2', 'Ubicacion': 'Malaga', 'Color': 'Amarillo'})
+put_item('Semaforo', {'ID': '3', 'Ubicacion': 'Córdoba', 'Color': 'Azul'})
+
+
 
 # Función para obtener un registro
 def get_item(table_name, key):
@@ -53,10 +65,12 @@ def get_item(table_name, key):
     return item
 
 # Obtener un registro de cada tabla
-get_item('Tabla1', {'ID': '1'})
-get_item('Tabla2', {'ID': '2'})
-get_item('Tabla3', {'ID': '3'})
+get_item('Usuario', {'Nombre': 'Paco','Edad': 25})
+get_item('Coche', {'Marca': 'Tesla', 'Duenno': 'Paco'})
+get_item('Semaforo', {'Ubicacion': 'Malaga', 'Color': 'Amarillo'})
 
+
+print("4 - Actualizar un registro de cada tabla")
 # Función para actualizar un registro
 def update_item(table_name, key, update_expression, expression_attribute_values):
     table = dynamodb.Table(table_name)
@@ -68,9 +82,12 @@ def update_item(table_name, key, update_expression, expression_attribute_values)
     print(f"Item updated in {table_name}: {key}")
 
 # Actualizar un registro en cada tabla
-update_item('Tabla1', {'ID': '1'}, "set Atributo1 = :val", {':val': 'NuevoValor1'})
-update_item('Tabla2', {'ID': '2'}, "set Atributo1 = :val", {':val': 'NuevoValor1'})
-update_item('Tabla3', {'ID': '3'}, "set Atributo1 = :val", {':val': 'NuevoValor1'})
+update_item('Usuario', {'Nombre': 'Paco', 'Edad': 25}, "set ID = :ID", {':ID': 6})
+update_item('Coche', {'Marca': 'Tesla', 'Duenno': 'Paco'}, "set ID = :ID", {':ID': 5})
+update_item('Semaforo', {'Ubicacion': 'Sevilla', 'Color': 'Rojo'}, "set ID = :ID", {':ID': 7})
+
+
+print("5 - Eliminar un registro de cada tabla")
 
 # Función para eliminar un registro
 def delete_item(table_name, key):
@@ -79,9 +96,10 @@ def delete_item(table_name, key):
     print(f"Item deleted from {table_name}: {key}")
 
 # Eliminar un registro de cada tabla
-delete_item('Tabla1', {'ID': '1'})
-delete_item('Tabla2', {'ID': '2'})
-delete_item('Tabla3', {'ID': '3'})
+delete_item('Usuario', {'Nombre': 'Paco', 'Edad': 25})
+delete_item('Coche', {'Marca': 'Tesla', 'Duenno': 'Paco'})
+delete_item('Semaforo', {'Ubicacion': 'Sevilla', 'Color': 'Rojo'})
+print("6 - Obtener todos los registros de cada tabla")
 
 # Obtener todos los registros de cada tabla
 def scan_table(table_name):
@@ -91,10 +109,12 @@ def scan_table(table_name):
     print(f"Items from {table_name}: {items}")
     return items
 
-scan_table('Tabla1')
-scan_table('Tabla2')
-scan_table('Tabla3')
+scan_table('Usuario')
+scan_table('Coche')
+scan_table('Semaforo')
 
+'''
+print("7 - Filtrar registros de cada tabla")
 # Filtrar registros de cada tabla
 def query_table(table_name, key_condition_expression, expression_attribute_values):
     table = dynamodb.Table(table_name)
@@ -107,8 +127,9 @@ def query_table(table_name, key_condition_expression, expression_attribute_value
     return items
 
 # Ejemplo de filtro
-query_table('Tabla1', 'ID = :id', {':id': '1'})
+query_table('Usuario', Key('Nombre','Edad').eq('Paco') & Key('Edad').eq(25), {':Nombre': 'Paco', ':Edad': 25})
 
+'''
 # Eliminación condicional
 def conditional_delete_item(table_name, key, condition_expression, expression_attribute_values):
     table = dynamodb.Table(table_name)
